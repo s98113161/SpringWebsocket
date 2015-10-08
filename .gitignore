@@ -13,7 +13,13 @@ $RECYCLE.BIN/
 *.msi
 *.msm
 *.msp
-
+.svn/
+.classpath
+.project
+.settings/
+target/
+.metadata/
+.recommenders/
 # Windows shortcuts
 *.lnk
 

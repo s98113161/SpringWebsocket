@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+
+        <title>Spring Thyme Seed Starter Manager</title>
+    	 <script src="resources/js/jquery-2.1.4.min.js" ></script>
+ 		 <script src="resources/js/websocket/sockjs.js" ></script>
+ 		 <script src="resources/js/websocket/stomp.js" ></script>
+		 <script >
+		 $(document).ready(function() {
+			 //2.這裡就是要連結的Endpoint，Server自訂取名叫做App。
+			   var socket = new SockJS('/SpringWebsocket/App');
+				stompClient = Stomp.over(socket);
+	            stompClient.connect({}, function(frame) {
+	              
+	                console.log('Connected: ' + frame);
+	                //3-1.這裡去subscribe /topic/showResult 所傳來的最新消息，有訊息傳送過來都會呼叫showResult方法。
+	                stompClient.subscribe('/topic/showResult', function(calResult){
+	                	//消息近來時會呼叫的方法。
+	                	showResult(JSON.parse(calResult.body).result);
+	                });
+	                /*
+					3-1.
+					這裡去subscribe /user/queue/search 所傳來的最新消息，有訊息傳送過來都會呼叫showResult方法，
+					必須注意的是/user/ 這個名字是制定好的名稱，UserDestinationMessageHandler會去辨識這個/user/前綴，
+					將session放到你所制定的消息地址末端，例如你的CONNECT session=3lbx7bg8，
+					UserDestinationMessageHandler會轉換成 Translated /user/queue/search -> [/queue/search-user3lbx7bg8]，
+					所以最後訂閱的時候會變成/queue/search-user3lbx7bg8，這個將訂閱獨一無二的位址。
+ 					詳細請見http://goo.gl/g86bkf，
+	                */
+	                stompClient.subscribe('/user/queue/search', function(data){
+	                	showResult(data.body);
+	                });
+	            });
+		 });
+		 //5-1.這裡通過/receive的前綴，把name與message 送到 @Controller 內 MessageMapping 名稱叫做search的方法。
+		 function queueBtn(){
+
+	         var message = document.getElementById('message').value;
+			 stompClient.send(
+						"/receive" + //matches messageBrokerRegistry.setApplicationDestinationPrefixes()
+						"/search", // matches the @MessageMapping annotation in our @Controller
+						{}, //如果你有spring security 	
+						{});
+					}
+			 
+		 
+		 function topicBtn() {
+
+	            var message = document.getElementById('message').value;
+	            
+	          // 4-1.這裡通過/receive的前綴，把name與message 送到 @Controller 內 MessageMapping 名稱叫做add的方法。
+				stompClient.send(
+					"/receive" + //matches messageBrokerRegistry.setApplicationDestinationPrefixes()
+					"/add", // matches the @MessageMapping annotation in our @Controller
+					{}, //如果你有spring security 	
+					JSON.stringify({
+						
+						'message' : message
+					}));
+				}
+				function showResult(message) {
+					var response = document.getElementById('showMsg');
+					var p = document.createElement('p');
+					p.style.wordWrap = 'break-word';
+					p.appendChild(document.createTextNode(message));
+					response.appendChild(p);
+					//scroll auto bottom
+					var objDiv = document.getElementById("scrollbar");
+					objDiv.scrollTop = objDiv.scrollHeight;
+				}
+			</script>
+</head>
+<body>
+
+	<h1 th:utext="#{index.hello}">default text</h1>
+
+    
+<!--  input  -->
+	 <div id="PersonDiv">
+       
+        <label>Message:</label><input type="text" id="message" />
+        <button id="sendNum" onclick="topicBtn();">topicBtn</button>
+        <button id="queueBtn" onclick="queueBtn();">queueBtn</button>
+    </div>
+ 
+ <!-- Sign Out -->
+       	<form th:action="@{/logout}" method="post">
+            <input type="submit" value="Sign Out"/>
+    	</form>
+ <!-- msg block -->
+    <div  style="width: 450px; height: 450px; overflow: hidden;">
+		<div id="scrollbar" style="overflow: scroll; height: 500px; width: 500px">
+			<div id="showMsg"></div>
+		</div>
+	</div>
+	
+</body>
+</html>
