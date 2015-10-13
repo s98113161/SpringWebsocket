@@ -1,17 +1,34 @@
 package com.kang.SpringWebsocket.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
+
 public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
-	
+	@Autowired
+	LogoutHandler CustomLogoutHandler;
+	@Bean
+	public CustomLogoutHandler customLogoutHandler() {
+	    return new CustomLogoutHandler();
+	}
+	 @Bean
+	    public SessionRegistry sessionRegistry() {
+	        return new SessionRegistryImpl();
+	    }
+
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 	  auth.inMemoryAuthentication().withUser("tom").password("123456").roles("USER");
@@ -22,6 +39,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
  
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		
 		http
 		.headers()
 			.frameOptions().sameOrigin()
@@ -39,11 +57,13 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 			.permitAll()
 			.and()
 		.logout()
-			.permitAll();
-
-	  
-	  
- 
+		//設定自己LogoutHandler，也許往後會要知道誰登出要做功能
+	    .addLogoutHandler(CustomLogoutHandler)
+	    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+		.permitAll();
+		//這裡可以抓一個帳號可以連幾個人，這裡是2個
+		http.sessionManagement().maximumSessions(2).sessionRegistry(sessionRegistry());
+		
 	}
 	
 

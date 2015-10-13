@@ -37,4 +37,5 @@ public class AppWebSocketSecurityConfig
     protected boolean sameOriginDisabled() {
         return true;
     }
+    
 }

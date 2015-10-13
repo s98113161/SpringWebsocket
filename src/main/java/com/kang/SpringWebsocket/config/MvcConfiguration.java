@@ -1,10 +1,15 @@
 package com.kang.SpringWebsocket.config;
 
+import org.springframework.boot.context.embedded.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -18,6 +23,7 @@ import org.thymeleaf.templateresolver.TemplateResolver;
 @ComponentScan(basePackages="com.kang.SpringWebsocket")
 @EnableWebMvc
 @Import({ AppSecurityConfig.class })
+@EnableScheduling
 public class MvcConfiguration extends WebMvcConfigurerAdapter{
 
 	/*
@@ -79,5 +85,6 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter{
 		registry.addResourceHandler("/fonts/**").addResourceLocations("/fonts/");
 		registry.addResourceHandler("/images/**").addResourceLocations("/images/");
 	}
+	
 
 }
