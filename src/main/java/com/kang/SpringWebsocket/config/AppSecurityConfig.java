@@ -1,9 +1,10 @@
 package com.kang.SpringWebsocket.config;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -11,7 +12,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -20,6 +20,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	LogoutHandler CustomLogoutHandler;
+	@Autowired
+	 DataSource dataSource;
 	@Bean
 	public CustomLogoutHandler customLogoutHandler() {
 	    return new CustomLogoutHandler();
@@ -31,10 +33,15 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-	  auth.inMemoryAuthentication().withUser("tom").password("123456").roles("USER");
-	  auth.inMemoryAuthentication().withUser("bill").password("123456").roles("ADMIN");
-	  auth.inMemoryAuthentication().withUser("ken").password("123456").roles("ADMIN");
-	  auth.inMemoryAuthentication().withUser("james").password("123456").roles("SUPERADMIN");
+//	  auth.inMemoryAuthentication().withUser("tom").password("123456").roles("USER");
+//	  auth.inMemoryAuthentication().withUser("bill").password("123456").roles("ADMIN");
+//	  auth.inMemoryAuthentication().withUser("ken").password("123456").roles("ADMIN");
+//	  auth.inMemoryAuthentication().withUser("james").password("123456").roles("SUPERADMIN");
+		auth.jdbcAuthentication().dataSource(dataSource)
+		  .usersByUsernameQuery(
+		   "select username,password, enabled from users where username=?")
+		  .authoritiesByUsernameQuery(
+		   "select username, role from user_roles where username=?");
 	}
  
 	@Override

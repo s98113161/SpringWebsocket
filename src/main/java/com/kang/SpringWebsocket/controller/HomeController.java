@@ -11,6 +11,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.kang.SpringWebsocket.item.MessageInput;
@@ -21,6 +22,14 @@ public class HomeController {
 
 	@Autowired
 	private SimpMessagingTemplate template;
+	
+	@RequestMapping("/user")
+	@ResponseBody
+	  public Principal user(Principal user) {
+		
+	    return user;
+	  }
+	
 	@RequestMapping(value = "/login")
 	public ModelAndView login(HttpServletResponse response) throws IOException {
 		return new ModelAndView("login");

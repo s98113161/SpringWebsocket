@@ -12,7 +12,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<spring.version>4.1.2.RELEASE</spring.version>
+		<javax.servlet.version>3.1.0</javax.servlet.version>
 		<cglib.version>2.2.2</cglib.version>
 		<org.springframework.security-version>4.0.3.CI-SNAPSHOT</org.springframework.security-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -20,6 +20,26 @@
 	</properties>
 
 	<dependencies>
+		<!-- log4j -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.6.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<!-- spring-jdbc -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>4.2.1.RELEASE</version>
+		</dependency>
+		<!-- jdbc-mariadb -->
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+			<version>1.1.7</version>
+		</dependency>
+
 		<!-- -websocket -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -73,13 +93,7 @@
 			<version>${org.springframework.security-version}</version>
 			<scope>compile</scope>
 		</dependency>
-		<!-- log4j -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.1</version>
-			<scope>compile</scope>
-		</dependency>
+
 
 		<!-- CGLib for @Configuration -->
 		<dependency>
@@ -94,7 +108,7 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
+			<version>${javax.servlet.version}</version>
 			<scope>provided</scope>
 		</dependency>
 

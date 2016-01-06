@@ -1,15 +1,12 @@
 package com.kang.SpringWebsocket.config;
 
-import org.springframework.boot.context.embedded.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.core.session.SessionRegistryImpl;
-import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -39,6 +36,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter{
 //		UserDaoImpl daoImpl =new UserDaoImpl();
 //		return daoImpl;
 //	}
+	
 	@Bean
 	public TemplateResolver templateResolver() {
 		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver();
@@ -47,7 +45,6 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter{
 		templateResolver.setCharacterEncoding("UTF-8");
 		templateResolver.setCacheTTLMs(3600000L);
 		templateResolver.setTemplateMode("HTML5");
-
 		return templateResolver;
 	}
 
@@ -64,7 +61,6 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter{
 		viewResolver.setTemplateEngine(templateEngine());
 		viewResolver.setCharacterEncoding("UTF-8");
 		viewResolver.setOrder(1);
-
 		return viewResolver;
 	}
 
@@ -73,10 +69,19 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter{
 	public ResourceBundleMessageSource messageSource() {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		messageSource.setBasename("/i18n/messages");
-
 		return messageSource;
 	}
-
+	
+	 @Bean(name = "dataSource")
+	 public DriverManagerDataSource dataSource() {
+	     DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
+	     driverManagerDataSource.setDriverClassName("org.mariadb.jdbc.Driver");
+	     driverManagerDataSource.setUrl("jdbc:mysql://localhost:3306/spring_security");
+	     driverManagerDataSource.setUsername("root");
+	     driverManagerDataSource.setPassword("123456");
+	     return driverManagerDataSource;
+	 }
+	 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
